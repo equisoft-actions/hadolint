@@ -1,0 +1,57 @@
+name: 'Hadolint'
+description: 'Run Hadolint Dockerfile linting tool'
+
+inputs:
+  dockerfile:
+    required: true
+    description: 'The path to the Dockerfile to lint'
+    default: 'Dockerfile'
+  format:
+    required: false
+    description: |
+      The output format for the results (default: sarif)
+      [tty | json | sarif | checkstyle | codeclimate | gitlab_codeclimate | codacy]
+    default: 'sarif'
+  failure-threshold:
+    required: false
+    description: |
+      Fail only if rules with severity above this threshold are violated.
+      One of [error | warning | info (default) | style | ignore]
+    default: 'info'
+  working-directory:
+    required: true
+    description: Working directory
+  ignore:
+    required: false
+    description: 'A space separated string of rules to ignore'
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Lint Dockerfile
+      id: scan
+      shell: bash
+      run: |
+        mkdir -p ${{ inputs.working-directory }}/build/quality/
+        docker run --rm -i \
+            -e HADOLINT_FORMAT=${{ inputs.format }} \
+            -e HADOLINT_FAILURE_THRESHOLD=${{ inputs.failure-threshold }} \
+            -e HADOLINT_IGNORE=${{ inputs.ignore }} \
+            hadolint/hadolint < ${{ inputs.dockerfile }} \
+            2>&1 | tee ${{ inputs.working-directory }}/build/quality/hadolint.sarif
+
+        result=$?
+        echo "::set-output name=status::$result"
+        if [ $result -ne 0 ]; then
+          exit $result
+        fi
+
+    - name: Upload results
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: hadolint.sarif
+        retention-days: ${{ inputs.report-retention-days }}
+        path: ${{ inputs.working-directory }}/build/quality/hadolint.sarif
+
