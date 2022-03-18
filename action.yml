@@ -19,7 +19,7 @@ inputs:
       One of [error | warning | info (default) | style | ignore]
     default: 'info'
   hadolint-version:
-    required: false
+    required: true
     description: |
       hadolint container version
     default: '2.8.0'
