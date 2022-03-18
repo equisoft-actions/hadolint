@@ -18,6 +18,11 @@ inputs:
       Fail only if rules with severity above this threshold are violated.
       One of [error | warning | info (default) | style | ignore]
     default: 'info'
+  hadolint-version:
+    required: false
+    description: |
+      hadolint container version
+    default: '2.8.0'
   working-directory:
     required: true
     description: Working directory
@@ -38,7 +43,7 @@ runs:
             -e HADOLINT_FORMAT=${{ inputs.format }} \
             -e HADOLINT_FAILURE_THRESHOLD=${{ inputs.failure-threshold }} \
             -e HADOLINT_IGNORE=${{ inputs.ignore }} \
-            hadolint/hadolint < ${{ inputs.dockerfile }} \
+            hadolint/hadolint:${{ inputs.hadolint-version }} < ${{ inputs.dockerfile }} \
             2>&1 | tee ${{ inputs.working-directory }}/build/quality/hadolint.sarif
 
         result=$?
