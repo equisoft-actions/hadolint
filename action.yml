@@ -22,7 +22,7 @@ inputs:
     required: true
     description: |
       hadolint container version
-    default: '2.8.0'
+    default: 'latest'
   working-directory:
     required: true
     description: Working directory
