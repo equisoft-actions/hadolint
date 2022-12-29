@@ -47,16 +47,13 @@ runs:
             2>&1 | tee ${{ inputs.working-directory }}/build/quality/hadolint.sarif
 
         result=$?
-        echo "::set-output name=status::$result"
+        echo "status=$result" >> $GITHUB_OUTPUT
         if [ $result -ne 0 ]; then
           exit $result
         fi
 
-    - name: Upload results
-      uses: actions/upload-artifact@v3
-      if: always()
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
       with:
-        name: hadolint.sarif
-        retention-days: ${{ inputs.report-retention-days }}
-        path: ${{ inputs.working-directory }}/build/quality/hadolint.sarif
-
+        sarif_file: ${{ inputs.working-directory }}/build/quality/hadolint.sarif
+        category: hadolint
