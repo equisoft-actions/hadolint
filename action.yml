@@ -54,6 +54,7 @@ runs:
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
+      if: always()
       with:
         sarif_file: ${{ inputs.working-directory }}/build/quality/hadolint.sarif
         category: hadolint
