@@ -39,6 +39,7 @@ runs:
       shell: bash
       run: |
         mkdir -p ${{ inputs.working-directory }}/build/quality/
+        docker pull hadolint/hadolint
         docker run --rm -i \
             -e HADOLINT_FORMAT=${{ inputs.format }} \
             -e HADOLINT_FAILURE_THRESHOLD=${{ inputs.failure-threshold }} \
